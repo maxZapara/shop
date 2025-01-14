@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.auth.models import User
+
 
 
 class Category(models.Model):
@@ -50,3 +52,9 @@ def gallery_upload_to(instance, filename):
 class ProductGallery(models.Model):
     product=models.ForeignKey(Product, on_delete=models.CASCADE, related_name="gallery")
     image=models.ImageField(upload_to=gallery_upload_to)
+
+
+class Comment(models.Model):
+    author=models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    content=models.TextField(blank=False, null=False)
+    created_at=models.DateTimeField(auto_now_add=True)

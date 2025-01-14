@@ -5,10 +5,7 @@
 <div id="containerProduct">
   <div id="containerD">
     <div id="imageSection">
-      <img
-        id="imgDetails"
-        src="{{product.get_first_image}}"
-      />
+      <img id="imgDetails" src="{{product.get_first_image}}" />
     </div>
     <div id="productDetails">
       <h1>{{product.title}}</h1>
@@ -16,20 +13,22 @@
       <div id="details">
         <h3>{{product.price}} USD</h3>
         <h3>Description</h3>
-        <p>
-          {{product.description}}
-        </p>
+        <p>{{product.description}}</p>
       </div>
       <div id="productPreview">
         <h3>Product Preview</h3>
         {% for img in gallery %}
-        <img
-          id="previewImg"
-          src="{{img.image.url}}"
-        />
+        <img id="previewImg" src="{{img.image.url}}" />
         {% endfor %}
       </div>
       <div id="button"><button>Add to Cart</button></div>
+    </div>
+    <div class="form_block">
+      <h2>Comments:</h2>
+      <form method="post">
+        {% csrf_token %} {{comment_form}}
+        <button type="submit">Submit comment</button>
+      </form>
     </div>
   </div>
 </div>
