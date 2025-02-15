@@ -29,10 +29,19 @@
 </head>
 
 <body>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{message.tags}}">
+                <h2>{{message}}</h2>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <header>
         <section>
             <!-- MAIN CONTAINER -->
-            <div id="container">
+            <div id="nav-container">
                 <!-- SHOP NAME -->
                 <div id="shopName"><a href="index.html"> <b>SHOP</b>LANE </a></div>
                     <!-- COLLCETIONS ON WEBSITE -->
@@ -117,7 +126,5 @@
 <!-- slider JS START -->
 <!-- slider JS ENDS -->
 
-<!-- content JS -->
-<script src="content.js"></script>
 
 </html>

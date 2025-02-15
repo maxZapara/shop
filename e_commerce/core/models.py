@@ -56,5 +56,6 @@ class ProductGallery(models.Model):
 
 class Comment(models.Model):
     author=models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    product=models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comments", null=True)
     content=models.TextField(blank=False, null=False)
     created_at=models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,27 @@
+{% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/registration.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="registration form">
+      <header>Signup</header>
+      <form action="{% url 'signup'%}" method="post">
+        {% csrf_token %}
+        <!-- <input type="text" placeholder="Enter your email"> -->
+        {{registration_form.username}}
+        {{registration_form.email}}
+        {{registration_form.password1}}
+        {{registration_form.password2}}
+        <input type="submit" class="button" value="Signup">
+      </form>
+      <div class="signup">
+        <span class="signup">Already have an account?
+         <label for="check">Login</label>
+        </span>
+      </div>
+    </div>
+  </div>
+{% endblock %}

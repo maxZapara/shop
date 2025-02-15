@@ -1,10 +1,4 @@
-body
-{
-    margin: 0;
-    text-transform: capitalize;
-    font-family: 'Lato', sans-serif;
-    font-weight: 100;
-}
+
 
 #containerProduct
 {
@@ -187,8 +181,14 @@ button a:focus
     }
 }
 
+.comments_container{
+    width: 80%;
+    margin: 0 auto;
+}
+
 .form_block{
     margin-top: 30px;
+    width: 100%;
 
 }
 
@@ -206,4 +206,37 @@ button a:focus
 .form_block form textarea {
     display: block;
     width: 100%;
+    min-height: 50px;
+    margin-bottom: 40px;
+    resize: vertical;
+}
+
+.comment{
+    width: 80%;
+    margin: 10px auto;
+    padding: 10px;
+    border: 3px solid rgb(3, 122, 122);
+
+}
+
+.comment-header{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 3px solid rgb(6, 57, 57);
+    align-items: center
+}
+
+.comment-details{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.comment-details button{
+    background: none;
+    transition: all 0.3s ease-in;
+}
+
+.comment-details button:hover {
+    background: rgb(3, 122, 122);
 }
