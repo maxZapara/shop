@@ -38,3 +38,8 @@ def auth_signup(request):
                     print(e)
     
     return render(request, 'users/registration.html', {'registration_form': form})
+
+
+def google_callback(request):
+    print("google_callback")
+    return redirect("home")

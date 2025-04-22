@@ -21,7 +21,9 @@
         <img id="previewImg" src="{{img.image.url}}" />
         {% endfor %}
       </div>
-      <div id="button"><button>Add to Cart</button></div>
+      <div id="button">
+        <button onclick="addToCart('{{product.id}}')">Add to Cart</button>
+      </div>
     </div>
   </div>
   <div class="comments_container">
@@ -85,26 +87,61 @@
           {% endif %}
         </div>
       </div>
-
+    
       {% endfor %}
     </div>
   </div>
 </div>
 
+<script src="/static/js/cart.js"></script>
 <script>
   function deleteComment(button, commentId) {
-    console.log(commentId)
-    const url = `http://127.0.0.1:8000/comments/${commentId}/delete`
-    fetch(url, {method:'DELETE',credentials:'include'}).then((res)=>res.json()).then((data)=>{
-      console.log(data)
-      if(data.success){
-        const comment=button.parentElement.parentElement;
-        comment.remove()
-      }
-    }).catch((err)=>{
-      console.error(err)
-    })
+    console.log(commentId);
+    const url = `http://127.0.0.1:8000/comments/${commentId}/delete`;
+    fetch(url, { method: "DELETE", credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success) {
+          const comment = button.parentElement.parentElement;
+          comment.remove();
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
+
+  function changePreviewImage(e) {
+    const img = e.target;
+    // console.log(img)
+    imgDetails.src = img.src;
+  }
+
+  const imgDetails = document.querySelector("#imgDetails");
+
+  document.querySelectorAll("#previewImg").forEach((img) => {
+    img.addEventListener("click", changePreviewImage);
+  });
+
+
+  // function addToCart(productId) {
+  //   const url = "{% url 'cart' %}";
+  //   fetch(url, {
+  //     method: "POST",
+  //     credentials: "include",
+  //     body: JSON.stringify({ product_id: productId }),
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //       const cart_info=data.cart;
+  //       localStorage.setItem('cart', JSON.stringify(cart_info));
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }
 </script>
 
 {% endblock%}

@@ -1,0 +1,138 @@
+{% extends "../base.html" %} 
+{% block head %}
+    <link rel="stylesheet" href="/static/css/order.css" />
+{% endblock%}
+
+{% block content %}
+<div class="container">
+    <div class="order-container">
+        
+        <h2>Items:</h2>
+        <div class="order-items"></div>
+        <p class="order-price">Total price:<strong class="order-price"></strong>$</p>
+        <div class="wrapper">
+            <div class="container">
+                <form action="">
+                    <h1>
+                        <i class="fas fa-shipping-fast"></i>
+                        Shipping Details
+                    </h1>
+                    <div class="name">
+                        <div>
+                            <label for="f-name">First</label>
+                            <input type="text" name="f-name">
+                        </div>
+                        <div>
+                            <label for="l-name">Last</label>
+                            <input type="text" name="l-name">
+                        </div>
+                    </div>
+                    <div class="street">
+                        <label for="name">Street</label>
+                        <input type="text" name="address">
+                    </div>
+                    <div class="address-info">
+                        <div>
+                            <label for="city">City</label>
+                            <input type="text" name="city">
+                        </div>
+                        <div>
+                            <label for="state">State</label>
+                            <input type="text" name="state">
+                        </div>
+                        <div>
+                            <label for="zip">Zip</label>
+                            <input type="text" name="zip">
+                        </div>
+                    </div>
+                    <h1>
+                        <i class="far fa-credit-card"></i> Payment Information
+                    </h1>
+                    <div class="cc-num">
+                        <label for="card-num">Credit Card No.</label>
+                        <input type="text" name="card-num">
+                    </div>
+                    <div class="cc-info">
+                        <div>
+                            <label for="card-num">Exp</label>
+                            <input type="text" name="expire">
+                        </div>
+                        <div>
+                            <label for="card-num">CCV</label>
+                            <input type="text" name="security">
+                        </div>
+                    </div>
+                    <div class="btns">
+                        <button>Purchase</button>
+                        <button>Back to cart</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/static/js/cart.js"></script>
+<script>
+
+    let currentTotalPrice=0;
+
+    function calculateTotalPrice() {
+        const cartItems = JSON.parse(sessionStorage.getItem('cart'));
+        const cartValues=Object.values(cartItems);
+        const totalPrice=cartValues.reduce((acc, item) => {
+            const price = item.price;
+            const quantity = item.quantity;
+            return acc + (price * quantity);
+        }, 0);
+        console.log("Total price:", totalPrice);
+        return totalPrice;
+    }
+
+    function updatePriceIfNeeded(){
+        const newTotalPrice=calculateTotalPrice();
+        if (newTotalPrice!=currentTotalPrice){
+            currentTotalPrice=newTotalPrice;
+            orderPrice.innerText=newTotalPrice;
+            console.log("Updated price:", currentTotalPrice);
+        }
+    }
+
+    const orderItemsBlock = document.querySelector('.order-items');
+    const orderPrice = document.querySelector('.order-price');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const cartItems = JSON.parse(sessionStorage.getItem('cart'));
+        showCartItems(cartItems, orderItemsBlock, orderPrice);
+
+        const itemsQuantityInputs=document.querySelectorAll(".quantity-input");
+        console.log("Inputs:", itemsQuantityInputs)
+        itemsQuantityInputs.forEach(input=>{
+            input.addEventListener("change", (e)=>{
+                let intervalId=setInterval((input)=>{
+                    updatePriceIfNeeded();
+                }, 200);
+                setTimeout(()=>{
+                    clearInterval(intervalId);
+                }, 2000);
+            })
+        })
+
+        const removeCartButtons=document.querySelectorAll(".remove-cart");
+        removeCartButtons.forEach((btn)=>{
+            btn.addEventListener("click", (e)=>{
+                const cartBlock=btn.parentElement.parentElement.parentElement.parentElement;
+                cartBlock.remove();
+                let intervalId=setInterval((input)=>{
+                    updatePriceIfNeeded();
+                }, 200);
+                setTimeout(()=>{
+                    clearInterval(intervalId);
+                }, 2000);
+            })
+        })
+
+    });
+</script>
+{% endblock%}

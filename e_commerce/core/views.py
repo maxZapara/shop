@@ -53,3 +53,43 @@ def delete_comment(request, comment_id):
         return JsonResponse({'success' : True})
     
     return JsonResponse({'success' : False, 'message': 'Invalid metod'}, status=400)
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def cart(request):
+    from django.http import JsonResponse
+    from django.shortcuts import get_object_or_404
+    from .models import Product
+    from .cart import Cart
+    import json
+
+    cart = Cart(request)
+    if request.method == "GET":
+        return JsonResponse({"success": True, "cart": cart.get_cart()})
+    else:
+            try:
+                data = json.loads(request.body)
+                product_id = data.get("product_id")
+                quantity = data.get("quantity")
+                if not product_id:
+                    return JsonResponse(
+                        {"success": False, "message": "Missing product ID"}, status=400
+                    )
+
+                product = get_object_or_404(Product, id=product_id)
+                if request.method == "POST":
+                    cart.add(product, quantity)
+                    return JsonResponse({"success": True, "cart": cart.get_cart()})
+                elif request.method == "DELETE":
+                    cart.remove(product)
+                    return JsonResponse({"success": True, "cart": cart.get_cart()})
+                else:
+                    return JsonResponse(
+                        {"success": False, "message": "Invalid method"}, status=400
+                    )
+            except json.JSONDecodeError:
+                return JsonResponse(
+                    {"success": False, "message": "Invalid JSON format"}, status=400
+                )
+            
