@@ -160,8 +160,8 @@ body
 #collection
 {
     font-weight: bold;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    align-items: center;
 }
 #collection a
 {
@@ -215,6 +215,63 @@ body
 #user a
 {
     color: rgb(29, 29, 29)
+}
+
+.categories {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.categories li {
+    position: relative;
+}
+
+.categories li a {
+    text-decoration: none;
+    color: rgb(29, 29, 29);
+    font-weight: bold;
+}
+
+.categories_list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid rgb(204, 204, 204);
+    padding: 10px;
+    list-style: none;
+    z-index: 1000;
+    display: none;
+}
+.categories_list li {
+    width: 100%;
+}
+
+.categories_list li a {
+    display: block;
+    text-decoration: none;
+    color: rgb(29, 29, 29);
+    font-weight: normal;
+    font-size: 18px;
+    text-align: left;
+    width: 100%;
+}
+ 
+.categories li:hover>.categories_list {
+    display: block;
+} 
+
+#search{
+    display: flex;
+    align-items: center;
+}
+
+#search button{
+    background-color: transparent;
+    border: none;
+    color: rgb(29, 29, 29);
+    cursor: pointer;
 }
 
 /* ----------------------------- MEDIA QUERY --------------------------- */

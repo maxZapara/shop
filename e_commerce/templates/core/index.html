@@ -17,17 +17,34 @@
     <div id="mainContainer">
 
         <h1> clothing for men and women </h1>
-        <div id="containerClothing">
+        <div class="products-list">
             {% for product in products %}
-                <div id="box">
-                    <a href="{% url 'product_details' id=product.id %}">
-                    <img src="{{product.get_first_image}}" alt="">
-                        <div id="details">
-                            <h3>{{product.title}}</h3>
-                            <h2>{{product.price}} грн</h2>
+            <div class="product">
+                <a href="{% url 'product_details' id=product.id %}">
+                    <img src="{{ product.get_first_image }}"
+                        alt="{{ product.title }}">
+                    <div id="details">
+                        <h3>{{ product.title }}</h3>
+                        <h2>{{ product.price }} грн
+                            {% if product.discount %}
+                            <span class="discount-label">
+                                -{{product.discount}}%</span>
+                            {% endif %}
+                        </h2>
+                        <div
+                            style="font-size:13px; color:#555; margin-top:4px;">
+                            {{ product.brand.name }}
+                            {% if product.size.all %}
+                            &middot;
+                            {% for s in product.size.all %}
+                            {{ s.name }}
+                            {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                            {% endif %}
                         </div>
-                    </a>
-                </div>
+                    </div>
+                </a>
+            </div>
 
             {% endfor %}
         </div>

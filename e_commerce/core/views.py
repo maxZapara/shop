@@ -4,14 +4,41 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
+def categories_processors(request):
+    from .models import Category
+    categories = Category.objects.all()
+    return {'categories': categories}
+
+
 def home(request):
     from .models import Product
 
     products=Product.objects.all()
+    return render(request, 'core/index.html', {"products": products})
 
-    return render(request, 'core/index.html', {'products': products})
+def product_list(request):
+    from .models import Product
+    from .filters import ProductFilter
+    from django.db.models import Q
 
-@login_required
+    search_query = request.GET.get("title", "").strip()
+
+    if search_query == "":
+        queryset = Product.objects.all()
+        product_filter = ProductFilter(request.GET, queryset=queryset)
+    else:
+        queryset = Product.objects.all()
+        queryset = queryset.filter(
+            Q(title__icontains=search_query) | Q(brand__name__icontains=search_query)
+        )
+        product_filter = ProductFilter(request.GET, queryset=queryset)
+    selected_sizes = request.GET.getlist("size")
+    return render(
+        request,
+        "core/product_list.html",
+        {"filter": product_filter, "selected_sizes": selected_sizes},
+    )
+
 def product_details(request, id):
     from django.shortcuts import get_object_or_404
     from .models import Product

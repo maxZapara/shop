@@ -11,7 +11,19 @@ const totalprice=document.querySelector('.total-price');
 window.addEventListener('pageshow', () => {
     console.log('Pageshow');
     if (!sessionStorage.getItem("already_loaded")) {
-        fetchCartItems();
+        const response=fetchCartItems();
+        response
+            .then(res => res.json())
+            .then(data => {
+                const cart_info = data.cart;
+                sessionStorage.setItem('cart', JSON.stringify(cart_info));
+                showCartItems(cart_info, cartItemsBlock, totalprice);
+
+            })
+            .catch(err => {
+                console.log("Error get cart item:", err)
+            })
+        
         sessionStorage.setItem("already_loaded", true);
     } else {
         const cartItems = JSON.parse(sessionStorage.getItem('cart'));
@@ -114,20 +126,20 @@ function removeCartItem(productId, ) {
 
 function fetchCartItems(){
     const url="http://127.0.0.1:8000/cart"
-    fetch(url,{
+    return fetch(url,{
         method:"GET",
         credentials:'include',
     })
-        .then(res => res.json())
-        .then(data => {
-            const cart_info = data.cart;
-            sessionStorage.setItem('cart', JSON.stringify(cartItems));
-            showCartItems(cartItems, cartItemsBlock, totalprice);
+        // .then(res => res.json())
+        // .then(data => {
+        //     const cart_info = data.cart;
+        //     sessionStorage.setItem('cart', JSON.stringify(cart_info));
+        //     showCartItems(cart_info, cartItemsBlock, totalprice);
 
-        })
-        .catch(err => {
-            console.log("Error get cart item:", err)
-        })
+        // })
+        // .catch(err => {
+        //     console.log("Error get cart item:", err)
+        // })
 }
 
 

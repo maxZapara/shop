@@ -22,7 +22,7 @@
 
 .wrapper {
   margin-top: 5%;
-  width: 60%;
+  width: 100%;
   display: flex;
   justify-content: center;
   font-family: "Arimo";
@@ -93,6 +93,25 @@ form h1:nth-of-type(2) {
 }
 .name div {
   width: 45%;
+}
+
+.contact_info {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  width: 100%;
+  gap: 10%;
+}
+
+.helptext {
+  display: block;
+  font-size: 10px;
+  color: #8e2807;
+  width: 100%;
+}
+
+.contact_info div {
+  min-width: 45%;
 }
 
 .address-info {

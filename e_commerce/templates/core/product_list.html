@@ -1,0 +1,242 @@
+{% extends "../base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/index.css">
+<style>
+    .container{
+        margin-top: 100px;
+    }
+    .filter-modal-backdrop {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0; top: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.25);
+    }
+    .filter-modal-backdrop.active {
+        display: block;
+    }
+    .filter-modal {
+        position: fixed;
+        z-index: 1001;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        padding: 32px 32px 24px 32px;
+        min-width: 320px;
+        max-width: 95vw;
+        min-height: 100px;
+        max-height: 90vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+    .filter-modal h2 {
+        margin: 0 0 12px 0;
+        font-size: 22px;
+        color: #222;
+        font-weight: 700;
+    }
+    .filter-row {
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .filter-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 2px;
+    }
+    .filter-input, .filter-select {
+        padding: 7px 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 15px;
+        background: #fafafa;
+    }
+    .filter-checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .filter-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 15px;
+        background: #f4f4f4;
+        border-radius: 4px;
+        padding: 2px 8px;
+    }
+    .filter-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 10px;
+        justify-content: flex-end;
+    }
+    .filter-btn, .filter-close-btn {
+        background: #222;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 22px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .filter-btn:hover, .filter-close-btn:hover {
+        background: #444;
+    }
+    .open-filter-btn {
+        background: #1a8917;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 28px;
+        font-size: 17px;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 32px auto 24px auto;
+        display: block;
+        transition: background 0.2s;
+    }
+    .open-filter-btn:hover {
+        background: #166d13;
+    }
+    .discount-label{
+        background-color: rgb( 29, 29, 29);
+        font-size: 14px;
+        color: tomato;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 8px;
+    }
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container">
+    <button class="open-filter-btn" id="openFilterBtn">Фільтрувати</button>
+    <div class="filter-modal-backdrop" id="filterBackdrop"></div>
+    <div class="filter-modal" id="filterModal" style="display:none;">
+        <h2>Фільтри</h2>
+        <form id="filterForm" method="get">
+            <!-- Категорія -->
+            <div class="filter-row">
+                <label class="filter-label" for="id_category">Категорія</label>
+                <select name="category" id="id_category" class="filter-select">
+                    <option value="">Всі</option>
+                    {% for cat in filter.form.fields.category.queryset %}
+                        <option value="{{ cat.pk }}" {% if filter.form.initial.category|stringformat:"s" == cat.pk|stringformat:"s" or request.GET.category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Ціна -->
+            <div class="filter-row">
+                <label class="filter-label">Ціна</label>
+                <div style="display:flex; gap:8px;">
+                    <input class="filter-input" type="number" name="price_min" placeholder="від" min="0" value="{{ request.GET.price_min|default_if_none:'' }}">
+                    <input class="filter-input" type="number" name="price_max" placeholder="до" min="0" value="{{ request.GET.price_max|default_if_none:'' }}">
+                </div>
+            </div>
+            <!-- Бренд -->
+            <div class="filter-row">
+                <label class="filter-label" for="id_brand">Бренд</label>
+                <select name="brand" id="id_brand" class="filter-select">
+                    <option value="">Всі</option>
+                    {% for b in filter.form.fields.brand.queryset %}
+                        <option value="{{ b.pk }}" {% if filter.form.initial.brand|stringformat:"s" == b.pk|stringformat:"s" or request.GET.brand == b.pk|stringformat:"s" %}selected{% endif %}>{{ b.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Розмір -->
+            <div class="filter-row">
+                <label class="filter-label">Розмір</label>
+                <div class="filter-checkbox-group">
+                    {% for s in filter.form.fields.size.queryset %}
+                        <label class="filter-checkbox-label">
+                            <input type="checkbox" name="size" value="{{ s.pk }}"
+                                {% if s.pk|stringformat:"s" in selected_sizes %}checked{% endif %}>
+                            {{ s.name }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Є знижка -->
+            <div class="filter-row" style="flex-direction: row;">
+                <label class="filter-label" for="id_has_discount">Є знижка</label>
+                <input type="checkbox" name="has_discount" id="id_has_discount" value="true"
+                    {% if request.GET.has_discount %}checked{% endif %}>
+            </div>
+            <div class="filter-actions">
+                <button type="button" class="filter-close-btn" id="closeFilterBtn">Закрити</button>
+                <button type="submit" class="filter-btn" id="applyFilterBtn">Фільтрувати</button>
+            </div>
+        </form>
+    </div>
+    <div id="mainContainer">
+        <h1>Products:</h1>
+        <div class="products-list">
+         {% for product in filter.qs %}
+        <div class="product">
+            <a href="{% url 'product_details' id=product.id %}">
+                <img src="{{ product.get_first_image }}"
+                    alt="{{ product.title }}">
+                {% if product.discount %}
+                <span class="discount-label">
+                    -{{product.discount}}%</span>
+                {% endif %}
+                <div id="details">
+                    <h3>{{ product.title }}</h3>
+                    <h2>{{ product.price }} грн</h2>
+                    <div
+                        style="font-size:16px; color:#555; margin-top:4px;">
+                        <strong style="font-weight: 600;">{{ product.brand.name}}</strong>
+                        {% if product.size.all %}
+                        &middot;
+                        {% for s in product.size.all %}
+                        {{ s.name }}
+                        {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {% empty %}
+            <div class="empty-products">Products with this options not found!</div>
+        {% endfor %}
+    </div>
+<script>
+    const openBtn = document.getElementById('openFilterBtn');
+    const modal = document.getElementById('filterModal');
+    const backdrop = document.getElementById('filterBackdrop');
+    const closeBtn = document.getElementById('closeFilterBtn');
+    const filterForm = document.getElementById('filterForm');
+
+    openBtn.onclick = function() {
+        modal.style.display = 'flex';
+        backdrop.classList.add('active');
+    };
+    closeBtn.onclick = function() {
+        modal.style.display = 'none';
+        backdrop.classList.remove('active');
+    };
+    backdrop.onclick = function() {
+        modal.style.display = 'none';
+        backdrop.classList.remove('active');
+    };
+    filterForm.onsubmit = function() {
+        modal.style.display = 'none';
+        backdrop.classList.remove('active');
+        // форма відправиться як GET і товари оновляться
+    };
+</script>
+{% endblock %}

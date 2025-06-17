@@ -12,37 +12,73 @@
         <p class="order-price">Total price:<strong class="order-price"></strong>$</p>
         <div class="wrapper">
             <div class="container">
-                <form action="">
+                <form method="post">
+                    {% csrf_token %}
                     <h1>
                         <i class="fas fa-shipping-fast"></i>
                         Shipping Details
                     </h1>
+                    {% if form.non_field_errors %}
+                        <div>
+                            {{form.non_field_errors}}
+                        </div>
+                    {% endif %}
                     <div class="name">
                         <div>
-                            <label for="f-name">First</label>
-                            <input type="text" name="f-name">
+                            <!-- <label for="f-name">First</label>
+                            <input type="text" name="f-name"> -->
+                            {{form.first_name.label_tag}}
+                            {{form.first_name}}
+                            {{form.first_name.errors}}
                         </div>
                         <div>
-                            <label for="l-name">Last</label>
-                            <input type="text" name="l-name">
+                            <!-- <label for="l-name">Last</label>
+                            <input type="text" name="l-name"> -->
+                            {{form.last_name.label_tag}}
+                            {{form.last_name}}
+                            {{form.last_name.errors}}
+                        </div>
+                    </div>
+                    <div class="contact-info">
+                        <div>
+                            {{form.phone.label_tag}}
+                            {{form.phone}}
+                            {{form.phone.errors}}
+                        </div>
+                        <div>
+                            {{form.email.label_tag}}
+                            {{form.email}}
+                            {{form.email.errors}}
                         </div>
                     </div>
                     <div class="street">
-                        <label for="name">Street</label>
-                        <input type="text" name="address">
+                        <!-- <label for="name">Street</label>
+                        <input type="text" name="address"> -->
+                        {{form.adress.label_tag}}
+                        {{form.adress}}
+                        {{form.adress.errors}}
                     </div>
                     <div class="address-info">
                         <div>
-                            <label for="city">City</label>
-                            <input type="text" name="city">
+                            <!-- <label for="city">City</label>
+                            <input type="text" name="city"> -->
+                            {{form.city.label_tag}}
+                            {{form.city}}
+                            {{form.city.errors}}
                         </div>
                         <div>
-                            <label for="state">State</label>
-                            <input type="text" name="state">
+                            <!-- <label for="state">State</label>
+                            <input type="text" name="state"> -->
+                            {{form.state.label_tag}}
+                            {{form.state}}
+                            {{form.state.errors}}
                         </div>
                         <div>
-                            <label for="zip">Zip</label>
-                            <input type="text" name="zip">
+                            <!-- <label for="zip">Zip</label>
+                            <input type="text" name="zip"> -->
+                            {{form.postal_code.label_tag}}
+                            {{form.postal_code}}
+                            {{form.postal_code.errors}}
                         </div>
                     </div>
                     <h1>
@@ -63,7 +99,7 @@
                         </div>
                     </div>
                     <div class="btns">
-                        <button>Purchase</button>
+                        <button type="submit">Purchase</button>
                         <button>Back to cart</button>
                     </div>
                 </form>
@@ -102,12 +138,9 @@
     const orderItemsBlock = document.querySelector('.order-items');
     const orderPrice = document.querySelector('.order-price');
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const cartItems = JSON.parse(sessionStorage.getItem('cart'));
-        showCartItems(cartItems, orderItemsBlock, orderPrice);
-
+    function checkItemsQuantityInputs (){
         const itemsQuantityInputs=document.querySelectorAll(".quantity-input");
-        console.log("Inputs:", itemsQuantityInputs)
+        // console.log("Inputs:", itemsQuantityInputs)
         itemsQuantityInputs.forEach(input=>{
             input.addEventListener("change", (e)=>{
                 let intervalId=setInterval((input)=>{
@@ -118,7 +151,9 @@
                 }, 2000);
             })
         })
+    }
 
+    function checkRemoveButtonClick() {
         const removeCartButtons=document.querySelectorAll(".remove-cart");
         removeCartButtons.forEach((btn)=>{
             btn.addEventListener("click", (e)=>{
@@ -132,6 +167,38 @@
                 }, 2000);
             })
         })
+    }
+
+    window.addEventListener('pageshow', () => {
+        orderItemsBlock.innerHTML='';
+        orderPrice.innerText=''
+        
+        const url="http://127.0.0.1:8000/cart"
+   
+        fetch(url,{
+            method:"GET",
+            credentials:'include',
+        })
+            .then(res => res.json())
+            .then(data => {
+                const cartItems = data.cart;
+                console.log("Cart data rom fetch:", cartItems)
+                sessionStorage.setItem('cart', JSON.stringify(cartItems));
+
+                showCartItems(cartItems, orderItemsBlock, orderPrice);
+                checkItemsQuantityInputs()
+                checkRemoveButtonClick()
+
+            })
+            .catch(err => {
+                console.log("Error get cart item:", err)
+            })
+
+        
+
+        
+
+       
 
     });
 </script>

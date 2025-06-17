@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            body{
+                background-color: lightgray;
+                padding: 15px;
+
+            }
+        </style>
+    </head>
+    <body style="
+        margin:0; 
+        padding: 10px;
+        background-color: lightcyan; 
+        border: 2px solid rgb(171, 168, 168); 
+        border-radius: 4px;
+    ">
+        <div>
+           <h1>Order by {{order.first_name}} {{order.last_name}}</h1>
+           <p>Date: <strong>{{order.created_at|date:"d/m/Y H:M"}}</strong></p>
+        </div>
+        <p>Adress: {{order.city}}, {{order.state}}, {{order.adress}}, {{order.postal_code}}</p>
+        <h2>Contact info: </h2>
+        <div>
+            <p>Phone: {{order.phone}}</p>
+            <p>Email: {{order.email}}</p>
+        </div>
+
+        <div>
+            <h2>Notes: </h2>
+            <p>{{order.notes}}</p>
+        </div>
+
+        <table width="100%" cellspacing="0" cellpadding="10" style="
+            background-color: rgb(199, 233, 229);
+            padding: 10px;
+        ">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{item.product.title}}</td>
+                    <td>{{item.quantity}}</td>
+                    <td>{{item.product.price}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total order price: </th>
+                    <th>{{order.total_price}}</th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <p style="text-align: center; margin: 30px 0;">
+            <a
+                href="{{domain}}{% url 'admin:orders_order_change' order.id %}"
+                style="
+                    display: inline-block;
+                    padding: 10px;
+                    background-color: green;
+                    color:white;
+                    text-decoration: none;
+                    font-size: 16px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                "
+                target="_blank">
+                View in Admin
+            </a>
+        </p>
+
+    </body>
+</html>
